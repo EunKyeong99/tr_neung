@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>타이핑 스트라이커</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        #sentence {
+            font-size: 24px;
+            width: 80%;
+            margin-bottom: 20px;
+            word-wrap: break-word;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        #input {
+            padding: 10px;
+            font-size: 18px;
+            width: 80%;
+            text-align: center;
+            border-radius: 8px;
+            border: none;
+        }
+        #timer {
+            font-size: 20px;
+            margin-top: 10px;
+            color: #ffcc00;
+            padding: 5px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>타이핑 스트라이커</h1>
+    <div id="sentence"></div>
+    <input type="text" id="input" placeholder="입력하세요" autofocus>
+    <div id="timer">남은 시간: 6초</div>
+    <div id="status"></div>
+
+    <script>
+        const sentences = [
+            "Easy come, Easy go.",
+            "20대에는 의지, 30대에는 기지, 40대에는 판단이 지배.",
+            "A sound mind in a sound body",
+            "fly high 바람이 되어 종이비행기를 타고서",
+            "House of the rising sun",
+            "Manners maketh man.",
+            "Well begun is half done",
+            "When you grow up, your heart dies.",
+            "You are what you eat.",
+            "곤란을 극복하는 것은 승리의 기회가 된다.",
+            "과거를 기억 못 하는 이들은 과거를 반복하기 마련이다.",
+            "과거에서 교훈을 얻을 수는 있어도 과거 속에 살 수는 없다.",
+            "국민을 비굴하게 만드는 정치가 가장 나쁜 정치다.",
+            "기회가 문을 두드릴 때 게으른 자는 시끄럽다고 화를 낸다.",
+            "ㄴr는 ㄱr끔 눈물을 흘린다...",
+            "나랏말싸미 듕귁에 달아 서로 사맞디 아니한체",
+            "내가 무릎을 꿇었던 건 추진력을 얻기 위함이었다.",
+            "담신믄 네모네모 멈뭄미뫄 눈미 마주치고 말맜습니다.",
+            "많이 보고 많이 겪고 많이 공부하는 것은 배움의 세 기둥이다.",
+            "생각하는 대로 살지 않으면 사는 대로 생각하게 된다.",
+            "송충이는 솔잎만 먹어야지 갈잎을 먹으면 죽는다.",
+            "사람은 말로써 나타낼 수 없을 만큼 멋진 만물의 소재이다.",
+            "아! 테일즈런너 아시는구나! 겁.나.어.렵.습.니.다.",
+            "우리찌ㅃ컴퓨터 키뽀뜨예 씨프트키까 안빠쪄요",
+            "이루어질 꿈도 이루어지지 않을 꿈만큼 불확실할 수 있다.",
+            "죄를 지은 게 사람인데, 사람을 어떻게 안 미워할 수 있습니까.",
+            "죽는 날까지 하늘을 우러러 한 점 부끄럼이 없기를.",
+            "많고 많은 런너 중에 내가 제일 잘났지 이래도 안 넘어올래?",
+            "진실한 사랑의 행동만이 얼어붙은 심장을 녹일 수 있단다.",
+            "런너는 석류를 좋아해! 자꾸자꾸 예뻐지면 나는 어떡해!",
+            "하아- 니는 입으로 테런 하나?",
+            "결혼의 성공 여부는 혼전에 80%가량 예상할 수 있다.",
+            "가장 용감한 행동은 자신만을 생각하는 것이다. 큰 소리로.",
+            "fly high 바람이 되어 종이비행기를 타고서",
+            "미래를 예측하는 최선의 방법은 미래를 창조하는 것이다.",
+            "사랑은 지배하는 것이 아니라 자유를 주는 것이다.",
+            "새벽 4시에 전화를 걸 수 있는 친구라면 중요한 친구이다.",
+            "양손을 주머니에 넣고서는 성공의 사다리를 오를 수 없다.",
+            "친구는 있다 없고, 없다 있을 수 있지만, 적은 계속 는다."
+        ];
+
+        let timer, countdown;
+        let startTime;
+        let gameActive = false;
+
+        function startGame() {
+            gameActive = true;
+            document.getElementById("input").value = "";
+            const index = Math.floor(Math.random() * sentences.length);
+            document.getElementById("sentence").innerText = sentences[index];
+            document.getElementById("status").innerText = "";
+            document.getElementById("timer").innerText = "남은 시간: 6초";
+            startTime = Date.now();
+            clearTimeout(timer);
+            clearInterval(countdown);
+
+            let timeLeft = 6;
+            countdown = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").innerText = `남은 시간: ${timeLeft}초`;
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                }
+            }, 1000);
+
+            timer = setTimeout(() => {
+                if (!gameActive) return;
+                gameActive = false;
+                document.getElementById("status").innerText = "실패";
+                document.getElementById("input").value = "";
+                setTimeout(startGame, 3000);
+            }, 6000);
+        }
+
+        document.getElementById("input").addEventListener("keydown", function(event) {
+            if (event.key === "Enter" && gameActive) {
+                gameActive = false;
+                clearTimeout(timer);
+                clearInterval(countdown);
+
+                let elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
+                if (this.value === document.getElementById("sentence").innerText) {
+                    document.getElementById("status").innerText = `성공 (${elapsedTime}초)`;
+                } else {
+                    document.getElementById("status").innerText = "실패";
+                }
+                document.getElementById("input").value = "";
+
+                setTimeout(startGame, 3000);
+            }
+        });
+
+        startGame();
+    </script>
+</body>
+</html>
